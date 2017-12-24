@@ -11,43 +11,49 @@ import java.util.*;
 //    [""""a"""",""""a"""",""""b""""]
 //  ]"""
 
-
 public class Question9 {
 	public static void main(String[] args) {
 		Question9 q = new Question9();
-		String input = "aba";
-		q.palindrome(input);
+		q.partition("aab");
 	}
-	
-	public void palindrome(String input) {
-		if (input == null || input.length() <= 1) {
+	public List<List<String>> partition(String input) {
+		List<List<String>> res = new ArrayList<>();
+		List<String> subRes = new ArrayList<>();
+		dfs(input, 0, res, subRes);
+		for (List<String> list : res) {
+			for (String s : list) {
+				System.out.print(s + " ");
+			}
+			System.out.println();
+		}
+		return res;
+	}
+
+	private void dfs(String s, int level, List<List<String>> res, List<String> subRes) {
+		if (level == s.length()) {
+			res.add(new ArrayList<>(subRes));
 			return;
 		}
-		List<String> result = new ArrayList<String>();
-		int length = input.length();
-		int[][] table = new int[length][length];
-	 
-		// l is length, i is index of left boundary, j is index of right boundary
-		for (int l = 1; l <= length; l++) {
-			for (int i = 0; i <= length - l; i++) {
-				int j = i + l - 1;
-				if (input.charAt(i) == input.charAt(j)) {
-					if (l == 1 || l == 2) {
-						table[i][j] = 1;
-					} else {
-						table[i][j] = table[i + 1][j - 1];
-					}
-					if (table[i][j] == 1) {
-						result.add(input.substring(i, j + 1));
-					}
-				} else {
-					table[i][j] = 0;
-				}
+		for (int i = level; i < s.length(); i++) {
+			if (isPal(s, level, i)) {
+				subRes.add(s.substring(level, i + 1));
+				dfs(s, i + 1, res, subRes);
+				subRes.remove(subRes.size() - 1);
 			}
 		}
-		for (String s : result) {
-			System.out.println(s);
+	}
+
+	private boolean isPal(String s, int left, int right) {
+		if (left == right) {
+			return true;
 		}
+		while (left < right) {
+			if (s.charAt(left) != s.charAt(right)) {
+				return false;
+			}
+			left++;
+			right--;
+		}
+		return true;
 	}
 }
-
